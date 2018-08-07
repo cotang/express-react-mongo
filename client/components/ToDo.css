@@ -1,0 +1,23 @@
+
+.to-do{
+  max-width: 450px;
+  margin: 0 auto;
+  border: 1px solid #000;
+  padding: 10px;
+}
+.to-do__title{
+  text-align: center;
+}
+.to-do__item--completed p{
+  text-decoration: line-through;
+  color: rgba(0,0,0,0.5);
+}
+.color{
+  margin-right: 0.5em;
+}
+.red{
+  color: red;
+}
+.green{
+  color: green;
+}
