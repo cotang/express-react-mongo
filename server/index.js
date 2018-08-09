@@ -40,9 +40,9 @@ app.post('/api/todos',
   },
   (req, res, next) => {
     const todoItem = {
-      key: Date.now(),
-      title: req.body.title,
-      completed: false
+      "key": Date.now(),
+      "title": req.body.title,
+      "completed": false
     }
      
     MongoClient.connect(url, function(err, client){
