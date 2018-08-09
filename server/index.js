@@ -10,7 +10,7 @@ var PORT = process.env.PORT || 3000
 const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
 // Connection URL
-const url = 'mongodb://admin:admin123@ds117422.mlab.com:17422/heroku_kxpl244p';
+const url = process.env.MONGODB_URI || 'mongodb://localhost:27017/todos';
 // Database Name
 const dbName = 'todos';
 
