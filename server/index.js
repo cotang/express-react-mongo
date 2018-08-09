@@ -5,13 +5,12 @@ var fs = require('fs');
 var bodyParser = require('body-parser');
 var app = express();
 var {renderLayout} = require('../templates/index.js');
-// var todolist = [{key: 1533129828864, title: 'Test', completed: false}];
-// var todolist = [];
+var PORT = process.env.PORT || 3000
 
 const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
 // Connection URL
-const url = 'mongodb://localhost:27017/todos';
+const url = 'mongodb://admin:admin123@ds117422.mlab.com:17422/heroku_kxpl244p';
 // Database Name
 const dbName = 'todos';
 
@@ -115,7 +114,7 @@ app.use(function(err, req, res, next) {
   res.status(500).send('Something broke!');  
 });
 
-app.listen(3000);
+app.listen(PORT);
 
 
 
