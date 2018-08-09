@@ -11,6 +11,9 @@ const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
 // Connection URL
 const url = process.env.MONGODB_URI || 'mongodb://localhost:27017/todos';
+// const url = 'mongodb://localhost:27017/todos';
+// const url = 'mongodb://admin:admin123@ds217092.mlab.com:17092/test-todo';
+// const url = 'mongodb://heroku_tj29hkq4:jal3rn6m6gcjmrnt8dp793n2vo@ds217452.mlab.com:17452/heroku_tj29hkq4';
 // Database Name
 const dbName = 'todos';
 
