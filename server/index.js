@@ -11,32 +11,43 @@ const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
 // Connection URL
 const dbName = process.env.MONGODB_URI ? (process.env.MONGODB_URI).slice().split('/').pop() : 'todos';
+const collectionName = 'todos';
 const url = process.env.MONGODB_URI || 'mongodb://localhost:27017/'+dbName;
-// const url = 'mongodb://localhost:27017/todos';
-// const url = 'mongodb://admin:admin123@ds217092.mlab.com:17092/test-todo';
-// const url = 'mongodb://heroku_tj29hkq4:jal3rn6m6gcjmrnt8dp793n2vo@ds217452.mlab.com:17452/heroku_tj29hkq4';
 
 
 app.use(bodyParser.json())
 
 app.use('/public', express.static(path.resolve(__dirname, '../public')));
 
-app.get('/api/todos', function(req, res) {
 
-  MongoClient.connect(url, function(err, client){
-    if (err) {
-      console.error(err)
-    } else {
-      console.log(url, dbName, 'mongo connected');
-    }
 
-    client.db(dbName).collection('todos').find({}).toArray(function(err, list){
-      res.send(list);
-      client.close();
-    });
+// Create a database variable outside of the database connection callback to reuse the connection pool in your app.
+var db;
+// Connect to the database before starting the application server.
+MongoClient.connect(url, function (err, client) {
+  if (err) {
+    console.log(err);
+    process.exit(1);
+  }
+  // Save database object from the callback for reuse.
+  db = client.db();
+  console.log("Database connection ready");
+  // Initialize the app.
+  var server = app.listen(PORT, function () {
+    var port = server.address().port;
+    console.log("App now running on port", port);
   });
-
 });
+
+
+
+app.get('/api/todos', function(req, res) {
+  db.collection(collectionName).find({}).toArray(function(err, list){
+    res.send(list);
+    // client.close();
+  });
+});
+
 
 app.post('/api/todos', 
   (req, res, next) => {
@@ -53,17 +64,13 @@ app.post('/api/todos',
       "completed": false
     }
      
-    MongoClient.connect(url, function(err, client){
-      var collection = client.db(dbName).collection('todos');
-      collection.insertOne(todoItem, function(err, result){
-        if(err) return res.status(400).send();
+    db.collection(collectionName).insertOne(todoItem, function(err, result){
+      if(err) return res.status(400).send();
 
-        collection.find({}).toArray(function(err, list){
-          res.send(list);
-        });
-
-        client.close();
+      db.collection(collectionName).find({}).toArray(function(err, list){
+        res.send(list);
       });
+      // client.close();
     });
 
   }
@@ -74,17 +81,13 @@ app.put('/api/todos/:todoID', function(req, res) {
   const requestID = Number(req.params.todoID);
   let newStatus = !req.body.completed;
 
-  MongoClient.connect(url, function(err, client){
-    var collection = client.db(dbName).collection('todos');
-    collection.findOneAndUpdate({key: requestID}, { $set: { completed: newStatus}}, {returnOriginal: false },function(err, result){
-      if(err) return res.status(400).send();
-        
-      collection.find({}).toArray(function(err, list){
-        res.send(list);
-      });
-
-      client.close();
+  db.collection(collectionName).findOneAndUpdate({key: requestID}, { $set: { completed: newStatus}}, {returnOriginal: false },function(err, result){
+    if(err) return res.status(400).send();
+      
+    db.collection(collectionName).find({}).toArray(function(err, list){
+      res.send(list);
     });
+    // client.close();
   });
 
 });
@@ -93,20 +96,17 @@ app.put('/api/todos/:todoID', function(req, res) {
 app.delete('/api/todos/:todoID', function(req, res) {
   const requestID = Number(req.params.todoID);
 
-  MongoClient.connect(url, function(err, client){
-    var collection = client.db(dbName).collection('todos');
-    collection.findOneAndDelete({key: requestID}, function(err, result){
-      if(err) return res.status(400).send();
+  db.collection(collectionName).findOneAndDelete({key: requestID}, function(err, result){
+    if(err) return res.status(400).send();
 
-      collection.find({}).toArray(function(err, list){
-        res.send(list);
-      });
-
-      client.close();
+    db.collection(collectionName).find({}).toArray(function(err, list){
+      res.send(list);
     });
+    // client.close();
   });
 
 });
+
 
 app.get('*', function(req, res) {
   res.status(200).send(renderLayout());
