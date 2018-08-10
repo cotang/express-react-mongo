@@ -10,12 +10,11 @@ var PORT = process.env.PORT || 3000
 const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
 // Connection URL
-const url = process.env.MONGODB_URI || 'mongodb://localhost:27017/todos';
+const dbName = process.env.MONGODB_URI ? (process.env.MONGODB_URI).slice().split('/').pop() : 'todos';
+const url = process.env.MONGODB_URI || 'mongodb://localhost:27017/'+dbName;
 // const url = 'mongodb://localhost:27017/todos';
 // const url = 'mongodb://admin:admin123@ds217092.mlab.com:17092/test-todo';
 // const url = 'mongodb://heroku_tj29hkq4:jal3rn6m6gcjmrnt8dp793n2vo@ds217452.mlab.com:17452/heroku_tj29hkq4';
-// Database Name
-const dbName = 'todos';
 
 
 app.use(bodyParser.json())
@@ -25,7 +24,13 @@ app.use('/public', express.static(path.resolve(__dirname, '../public')));
 app.get('/api/todos', function(req, res) {
 
   MongoClient.connect(url, function(err, client){
-    client.db('todos').collection('todos').find({}).toArray(function(err, list){
+    if (err) {
+      console.error(err)
+    } else {
+      console.log(url, dbName, 'mongo connected');
+    }
+
+    client.db(dbName).collection('todos').find({}).toArray(function(err, list){
       res.send(list);
       client.close();
     });
@@ -49,7 +54,7 @@ app.post('/api/todos',
     }
      
     MongoClient.connect(url, function(err, client){
-      var collection = client.db('todos').collection('todos');
+      var collection = client.db(dbName).collection('todos');
       collection.insertOne(todoItem, function(err, result){
         if(err) return res.status(400).send();
 
@@ -70,7 +75,7 @@ app.put('/api/todos/:todoID', function(req, res) {
   let newStatus = !req.body.completed;
 
   MongoClient.connect(url, function(err, client){
-    var collection = client.db('todos').collection('todos');
+    var collection = client.db(dbName).collection('todos');
     collection.findOneAndUpdate({key: requestID}, { $set: { completed: newStatus}}, {returnOriginal: false },function(err, result){
       if(err) return res.status(400).send();
         
@@ -89,7 +94,7 @@ app.delete('/api/todos/:todoID', function(req, res) {
   const requestID = Number(req.params.todoID);
 
   MongoClient.connect(url, function(err, client){
-    var collection = client.db('todos').collection('todos');
+    var collection = client.db(dbName).collection('todos');
     collection.findOneAndDelete({key: requestID}, function(err, result){
       if(err) return res.status(400).send();
 
