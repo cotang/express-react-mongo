@@ -160,7 +160,7 @@ class ToDo extends Component {
 
       return (
         <div className="to-do">
-          <h1 className="to-do__title mb-3">To-do list</h1>
+          <h1 className="to-do__title mb-3">To-do list (react express mongo)</h1>
           
           <InputSection onAddToList={this.add.bind(this)} />
 

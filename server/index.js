@@ -46,6 +46,7 @@ app.get('/api/todos', function(req, res) {
     res.send(list);
     // client.close();
   });
+  console.log(dbName)
 });
 
 
