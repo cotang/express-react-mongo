@@ -5,7 +5,7 @@ var fs = require('fs');
 var bodyParser = require('body-parser');
 var app = express();
 var {renderLayout} = require('../templates/index.js');
-var PORT = process.env.PORT || 3000
+var PORT = process.env.PORT || 3000;
 
 const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
@@ -123,7 +123,7 @@ app.use(function(err, req, res, next) {
   res.status(500).send('Something broke!');  
 });
 
-app.listen(PORT);
+// app.listen(PORT);
 
 
 
